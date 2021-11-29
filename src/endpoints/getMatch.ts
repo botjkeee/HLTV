@@ -108,6 +108,7 @@ export interface FullMatch {
   headToHead: HeadToHeadResult[]
   highlights: Highlight[]
   playerOfTheMatch?: Player
+  vsAnotherTeam: any
 }
 
 export const getMatch =
@@ -139,6 +140,7 @@ export const getMatch =
     const demos = getDemos($)
     const highlightedPlayers = getHighlightedPlayers($)
     const headToHead = getHeadToHead($)
+    const vsAnotherTeam = getVsAnotherTeam($)
     const highlights = getHighlights($, team1, team2)
     const playerOfTheMatch = getPlayerOfTheMatch($, players)
     const winnerTeam = getWinnerTeam($, team1, team2)
@@ -162,6 +164,7 @@ export const getMatch =
       highlightedPlayers,
       playerOfTheMatch,
       headToHead,
+      vsAnotherTeam,
       vetoes,
       highlights,
       demos,
@@ -192,7 +195,9 @@ function getTeam($: HLTVPage, n: 1 | 2): Team | undefined {
         name: $(`.team${n}-gradient .teamName`).text(),
         id: $(`.team${n}-gradient a`).attrThen('href', (href) =>
           href ? getIdAt(2, href) : undefined
-        )
+        ),
+        logo: ($(".team" + n + "-gradient .logo").attr('src').search("http") === -1) ? "https://www.hltv.org" + $(".team" + n + "-gradient .logo").attr('src') : $(".team" + n + "-gradient .logo").attr('src'),
+        country: $(".team" + n + "-gradient")?.prev()?.attr('src')?.split('/')?.pop()?.split('.')[0]
       }
     : undefined
 }
@@ -483,6 +488,26 @@ function getHeadToHead($: HLTVPage): HeadToHeadResult[] {
 
       return { date, map, winner, event, result }
     })
+}
+
+function getVsAnotherTeam($: HLTVPage) {
+  let teams: any = {}
+  $('.past-matches-grid .past-matches-box')
+      .toArray().map(function (elem) {
+          let teamName = elem.find('.past-matches-headline .past-matches-teamname a').text()
+          let array = elem.find('.past-matches-scroll-area tr')
+              .toArray().map(function (elem2) {
+                  return {
+                      team: elem2.find('.past-matches-team a').text(),
+                      country: elem2.find('.past-matches-team .flag')?.attr('src')?.split('/')?.pop()?.split('.')[0],
+                      map: elem2.find('.past-matches-map a').text(),
+                      score: elem2.find('.past-matches-score a').text(),
+                  }
+              })
+          teams[teamName] = array
+      })
+  return teams
+
 }
 
 function getHighlights($: HLTVPage, team1?: Team, team2?: Team): Highlight[] {
