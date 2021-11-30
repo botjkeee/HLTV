@@ -547,15 +547,15 @@ function getPlayerOfTheMatch(
 
 function getWinnerTeam(
   $: HLTVPage,
-  team1?: Team,
-  team2?: Team
+  team1?: any,
+  team2?: any
 ): Team | undefined {
   if ($('.team1-gradient .won').exists()) {
-    return team1
+    return { ...team1, score: [$('.team1-gradient .won').text(), $('.team2-gradient .lost').text()] }
   }
 
   if ($('.team2-gradient .won').exists()) {
-    return team2
+    return { ...team2, score: [$('.team1-gradient .lost').text(), $('.team2-gradient .won').text()] }
   }
 }
 
