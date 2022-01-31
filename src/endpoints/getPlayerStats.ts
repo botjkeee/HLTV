@@ -66,6 +66,8 @@ export interface FullPlayerStats {
     pistolKills: number
     grenadeKills: number
     otherKills: number
+    kast: string
+    impact: string
   }
 }
 
@@ -154,6 +156,14 @@ export const getPlayerStats =
       }
     }
 
+    const getImportantStats = (label: string): string | undefined => {
+      const lbl = label.toLowerCase()
+      const row = $('.summaryStatBreakdown').filter((_, x) =>
+        x.text().toLocaleLowerCase().includes(lbl)
+      )
+      if (row.exists()) return row.find('.summaryStatBreakdownDataValue').text()
+    }
+
     const overviewStatistics = {
       kills: getOverviewStats('Total kills')!,
       headshots: getOverviewStats('Headshot %')!,
@@ -170,7 +180,9 @@ export const getPlayerStats =
       savedTeammatesPerRound: getOverviewStats('Saved teammates'),
       ...(getOverviewStats('Rating 1.0') !== undefined
         ? { rating1: getOverviewStats('Rating 1.0') }
-        : { rating2: getOverviewStats('Rating 2.0') })
+        : { rating2: getOverviewStats('Rating 2.0') }),
+      kast: getImportantStats('kast'),
+      impact: getImportantStats('impact')
     }
 
     const getIndivialStats = (label: string): number => {

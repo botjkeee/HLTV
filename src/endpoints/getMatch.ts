@@ -196,8 +196,23 @@ function getTeam($: HLTVPage, n: 1 | 2): Team | undefined {
         id: $(`.team${n}-gradient a`).attrThen('href', (href) =>
           href ? getIdAt(2, href) : undefined
         ),
-        logo: ($(".team" + n + "-gradient .logo").attr('src').search("http") === -1) ? "https://www.hltv.org" + $(".team" + n + "-gradient .logo").attr('src') : $(".team" + n + "-gradient .logo").attr('src'),
-        country: $(".team" + n + "-gradient")?.prev()?.attr('src')?.split('/')?.pop()?.split('.')[0]
+        logo:
+          $('.team' + n + '-gradient .logo')
+            .attr('src')
+            .search('http') === -1
+            ? 'https://www.hltv.org' +
+              $('.team' + n + '-gradient .logo').attr('src')
+            : $('.team' + n + '-gradient .logo').attr('src'),
+        country: $('.team' + n + '-gradient')
+          ?.prev()
+          ?.attr('src')
+          ?.split('/')
+          ?.pop()
+          ?.split('.')[0],
+        rank: +$('div.teamRanking')
+          .eq(n - 1)
+          .text()
+          .replace('World rank: #', '')
       }
     : undefined
 }
@@ -493,21 +508,30 @@ function getHeadToHead($: HLTVPage): HeadToHeadResult[] {
 function getVsAnotherTeam($: HLTVPage) {
   let teams: any = {}
   $('.past-matches-grid .past-matches-box')
-      .toArray().map(function (elem) {
-          let teamName = elem.find('.past-matches-headline .past-matches-teamname a').text()
-          let array = elem.find('.past-matches-scroll-area tr')
-              .toArray().map(function (elem2) {
-                  return {
-                      team: elem2.find('.past-matches-team a').text(),
-                      country: elem2.find('.past-matches-team .flag')?.attr('src')?.split('/')?.pop()?.split('.')[0],
-                      map: elem2.find('.past-matches-map a').text(),
-                      score: elem2.find('.past-matches-score a').text(),
-                  }
-              })
-          teams[teamName] = array
-      })
+    .toArray()
+    .map(function (elem) {
+      let teamName = elem
+        .find('.past-matches-headline .past-matches-teamname a')
+        .text()
+      let array = elem
+        .find('.past-matches-scroll-area tr')
+        .toArray()
+        .map(function (elem2) {
+          return {
+            team: elem2.find('.past-matches-team a').text(),
+            country: elem2
+              .find('.past-matches-team .flag')
+              ?.attr('src')
+              ?.split('/')
+              ?.pop()
+              ?.split('.')[0],
+            map: elem2.find('.past-matches-map a').text(),
+            score: elem2.find('.past-matches-score a').text()
+          }
+        })
+      teams[teamName] = array
+    })
   return teams
-
 }
 
 function getHighlights($: HLTVPage, team1?: Team, team2?: Team): Highlight[] {
@@ -551,11 +575,23 @@ function getWinnerTeam(
   team2?: any
 ): Team | undefined {
   if ($('.team1-gradient .won').exists()) {
-    return { ...team1, score: [$('.team1-gradient .won').text(), $('.team2-gradient .lost').text()] }
+    return {
+      ...team1,
+      score: [
+        $('.team1-gradient .won').text(),
+        $('.team2-gradient .lost').text()
+      ]
+    }
   }
 
   if ($('.team2-gradient .won').exists()) {
-    return { ...team2, score: [$('.team1-gradient .lost').text(), $('.team2-gradient .won').text()] }
+    return {
+      ...team2,
+      score: [
+        $('.team1-gradient .lost').text(),
+        $('.team2-gradient .won').text()
+      ]
+    }
   }
 }
 
