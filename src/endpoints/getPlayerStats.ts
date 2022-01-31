@@ -45,6 +45,8 @@ export interface FullPlayerStats {
     savedTeammatesPerRound?: number
     rating1?: number
     rating2?: number
+    kast?: string
+    impact?: string
   }
   individualStatistics: {
     roundsWithKills: number
@@ -66,8 +68,6 @@ export interface FullPlayerStats {
     pistolKills: number
     grenadeKills: number
     otherKills: number
-    kast: string
-    impact: string
   }
 }
 
