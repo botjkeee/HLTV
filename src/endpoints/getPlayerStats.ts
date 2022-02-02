@@ -95,7 +95,7 @@ export const getPlayerStats =
       ...(options.bestOfX ? { bestOfX: options.bestOfX } : {})
     })
 
-    const [$, i$, m$] = await Promise.all([
+    const [$, i$, m$, c1$] = await Promise.all([
       fetchPage(
         `https://www.hltv.org/stats/players/${
           options.id
@@ -112,6 +112,12 @@ export const getPlayerStats =
         `https://www.hltv.org/stats/players/matches/${
           options.id
         }/${generateRandomSuffix()}?${query}`,
+        config.loadPage
+      ).then(HLTVScraper),
+      fetchPage(
+        `https://www.hltv.org/stats/players/clutches/${
+          options.id
+        }/1on4/${generateRandomSuffix()}?${query}`,
         config.loadPage
       ).then(HLTVScraper)
     ])
@@ -163,6 +169,17 @@ export const getPlayerStats =
       )
       if (row.exists()) return row.find('.summaryStatBreakdownDataValue').text()
     }
+
+    const test = (): void => {
+      const row = c1$('.stats-table').find('tr')
+      row.toArray().forEach((e) => {
+        console.log('---------------start--------------')
+
+        console.log(e.text())
+        console.log('-------------end--------------')
+      })
+    }
+    test()
 
     const overviewStatistics = {
       kills: getOverviewStats('Total kills')!,
