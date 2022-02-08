@@ -69,6 +69,7 @@ export interface FullPlayerStats {
     grenadeKills: number
     otherKills: number
   }
+  clutches: any
 }
 
 export interface GetPlayerStatsArguments {
@@ -117,7 +118,7 @@ export const getPlayerStats =
       fetchPage(
         `https://www.hltv.org/stats/players/clutches/${
           options.id
-        }/1on4/${generateRandomSuffix()}?${query}`,
+        }/1on1/${generateRandomSuffix()}?${query}`,
         config.loadPage
       ).then(HLTVScraper)
     ])
@@ -170,16 +171,29 @@ export const getPlayerStats =
       if (row.exists()) return row.find('.summaryStatBreakdownDataValue').text()
     }
 
-    const test = (): void => {
-      const row = c1$('.stats-table').find('tr')
+    const getClutches = (): any => {
+      let obj: any = {
+        allMap: { win: 0, lose: 0 }
+      }
+      const row = c1$('.stats-table').find('tbody tr')
       row.toArray().forEach((e) => {
-        console.log('---------------start--------------')
-
-        console.log(e.text())
-        console.log('-------------end--------------')
+        const map = e.find('.dynamic-map-name-full').text()
+        const win = e.find('.won').text() === 'Won' ? true : false
+        if (!obj[map])
+          obj[map] = {
+            win: 0,
+            lose: 0
+          }
+        if (win) {
+          obj[map].win += 1
+          obj.allMap.win += 1
+        } else {
+          obj[map].lose += 1
+          obj.allMap.lose += 1
+        }
       })
+      return obj
     }
-    test()
 
     const overviewStatistics = {
       kills: getOverviewStats('Total kills')!,
@@ -284,6 +298,7 @@ export const getPlayerStats =
       team,
       overviewStatistics,
       individualStatistics,
-      matches
+      matches,
+      clutches: getClutches()
     }
   }

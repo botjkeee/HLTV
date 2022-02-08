@@ -205,6 +205,50 @@ export const getTeamStats =
         const mapName = fromMapName(
           mapEl.prev().find('.map-pool-map-name').text()
         )
+        // console.log(mapEl.next().find('.biggestWin').next().text())
+        // console.log(mapEl.next().find('.biggestDefeat').next().text())
+        let biggestWin = {
+          href: mapEl
+            .next()
+            .find('.win-defeat-container .col')
+            .eq(0)
+            .find('a')
+            .attr('href'),
+          imgTeam: mapEl
+            .next()
+            .find('.win-defeat-container .col')
+            .eq(0)
+            .find('img')
+            .attr('src'),
+          team: mapEl.next().find('.biggestWin').next().text().split(' vs ')[1],
+          score: mapEl.next().find('.biggestWin').next().text().split(' vs ')[0]
+        }
+        let biggestDefeat = {
+          href: mapEl
+            .next()
+            .find('.win-defeat-container .col')
+            .eq(1)
+            .find('a')
+            .attr('href'),
+          imgTeam: mapEl
+            .next()
+            .find('.win-defeat-container .col')
+            .eq(1)
+            .find('img')
+            .attr('src'),
+          team: mapEl
+            .next()
+            .find('.biggestDefeat')
+            .next()
+            .text()
+            .split(' vs ')[1],
+          score: mapEl
+            .next()
+            .find('.biggestDefeat')
+            .next()
+            .text()
+            .split(' vs ')[0]
+        }
 
         const [wins, draws, losses] = getMapStat(mapEl, 0)
           .split(' / ')
@@ -217,7 +261,9 @@ export const getTeamStats =
           winRate: Number(getMapStat(mapEl, 1).split('%')[0]),
           totalRounds: Number(getMapStat(mapEl, 2)),
           roundWinPAfterFirstKill: Number(getMapStat(mapEl, 3).split('%')[0]),
-          roundWinPAfterFirstDeath: Number(getMapStat(mapEl, 4).split('%')[0])
+          roundWinPAfterFirstDeath: Number(getMapStat(mapEl, 4).split('%')[0]),
+          biggestWin,
+          biggestDefeat
         }
 
         return stats

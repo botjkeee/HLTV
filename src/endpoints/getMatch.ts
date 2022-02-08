@@ -109,6 +109,7 @@ export interface FullMatch {
   highlights: Highlight[]
   playerOfTheMatch?: Player
   vsAnotherTeam: any
+  statsPlayers: any
 }
 
 export const getMatch =
@@ -144,6 +145,7 @@ export const getMatch =
     const highlights = getHighlights($, team1, team2)
     const playerOfTheMatch = getPlayerOfTheMatch($, players)
     const winnerTeam = getWinnerTeam($, team1, team2)
+    const statsPlayers = getStats($, team1, team2)
 
     return {
       id,
@@ -163,6 +165,7 @@ export const getMatch =
       hasScorebot,
       highlightedPlayers,
       playerOfTheMatch,
+      statsPlayers,
       headToHead,
       vsAnotherTeam,
       vetoes,
@@ -171,6 +174,45 @@ export const getMatch =
       odds: odds.concat(oddsCommunity ? [oddsCommunity] : [])
     }
   }
+
+function getStats($: HLTVPage, team1?: Team, team2?: Team): any {
+  let obj: any = {}
+  const list = ['totalstats', 'ctstats', 'tstats']
+
+  const a = $(
+    '.matchstats .box-headline .small-padding .stats-menu-link .dynamic-map-name-full'
+  ).toArray()
+
+  a.forEach((e) => {
+    if (!obj[e.text()]) obj[e.text()] = {}
+    obj[e.text()] = {
+      id: e.attr('id'),
+      totalstats: [],
+      ctstats: [],
+      tstats: []
+    }
+
+    list.forEach((e3) => {
+      const stats = $('.matchstats')
+        .find(`#${e.attr('id')}-content .${e3}`)
+        .find('tr')
+        .toArray()
+
+      stats.forEach((e2) => {
+        if (e2.find('.align-logo').exists()) return
+        obj[e.text()][e3].push({
+          name: e2.find('.players .smartphone-only').text(),
+          kd: e2.find('.kd').text(),
+          pm: e2.find('.plus-minus').text(),
+          adr: e2.find('.adr').text(),
+          kast: e2.find('.kast').text(),
+          rating: e2.find('.rating').text()
+        })
+      })
+    })
+  })
+  return obj
+}
 
 function getMatchStatus($: HLTVPage): MatchStatus {
   let status = MatchStatus.Scheduled
@@ -482,7 +524,7 @@ function getHeadToHead($: HLTVPage): HeadToHeadResult[] {
     .toArray()
     .map((matchEl) => {
       const date = Number(matchEl.find('.date a span').attr('data-unix'))
-      const map = matchEl.find('.dynamic-map-name-short').text() as GameMap
+      const map = matchEl.find('.dynamic-map-name-full').text() as GameMap
       const isDraw = !matchEl.find('.winner').exists()
 
       let winner: Team | undefined
@@ -556,16 +598,24 @@ function getStatsId($: HLTVPage): number | undefined {
 function getPlayerOfTheMatch(
   $: HLTVPage,
   players: Record<string, Player[]>
-): Player | undefined {
+): any {
   const playerName: string | undefined = $(
     '.highlighted-player .player-nick'
   ).text()
 
   if (playerName) {
-    return (
+    const stats = $('.highlighted-player .potm-chart').toArray()
+    let array: any = []
+    stats.forEach((e) => {
+      array.push({
+        name: e.find('.potm-chart-stat').text(),
+        value: e.find('.potm-chart-bar-value').text()
+      })
+    })
+    const player =
       players.team1.find((x) => x.name === playerName) ||
       players.team2.find((x) => x.name === playerName)
-    )
+    return { ...player, stats: array }
   }
 }
 

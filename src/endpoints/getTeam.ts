@@ -13,9 +13,11 @@ export enum TeamPlayerType {
 }
 
 export interface FullTeamPlayer extends Player {
-  type: TeamPlayerType
+  type?: TeamPlayerType
   timeOnTeam: string
   mapsPlayed: number
+  trophies?: number
+  winrate?: string
 }
 
 export interface FullTeam {
@@ -27,6 +29,9 @@ export interface FullTeam {
   instagram?: string
   country: Country
   rank?: number
+  weeksTop30: string
+  averagePlayerAge: string
+  coach?: FullTeamPlayer
   players: FullTeamPlayer[]
   rankingDevelopment: number[]
   news: Article[]
@@ -51,6 +56,44 @@ export const getTeam =
     const rank = parseNumber(
       $('.profile-team-stat .right').first().text().replace('#', '')
     )
+    const weeksTop30 = $('.profile-team-stats-container .profile-team-stat')
+      .eq(1)
+      .find('span')
+      .text()
+    const averagePlayerAge = $(
+      '.profile-team-stats-container .profile-team-stat'
+    )
+      .eq(2)
+      .find('span')
+      .text()
+
+    const coach = $('.coach-table').exists()
+      ? {
+          name: $(
+            '.coach-table .playersBox-playernick-image .playersBox-playernick .text-ellipsis'
+          ).text(),
+          timeOnTeam: $('.coach-table tbody tr')
+            .first()
+            .find('td')
+            .eq(1)
+            .trimText()!,
+          mapsPlayed: $('.coach-table tbody tr')
+            .first()
+            .find('td')
+            .eq(2)
+            .numFromText()!,
+          trophies: $('.coach-table tbody tr')
+            .first()
+            .find('td')
+            .eq(3)
+            .numFromText()!,
+          winrate: $('.coach-table tbody tr')
+            .first()
+            .find('td')
+            .eq(4)
+            .trimText()!
+        }
+      : undefined
 
     const players = $('.players-table tbody tr')
       .toArray()
@@ -129,6 +172,9 @@ export const getTeam =
       instagram,
       country,
       rank,
+      weeksTop30,
+      averagePlayerAge,
+      coach,
       players,
       rankingDevelopment,
       news
