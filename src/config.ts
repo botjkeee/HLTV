@@ -15,24 +15,22 @@ export const defaultLoadPage =
       request.get(
         url,
         {
+          proxy: proxy
+            ? proxy[Math.floor(Math.random() * proxy.length)]
+            : false,
           gzip: true,
           agent: httpAgent,
           headers: {
             'User-Agent': randomUseragent.getRandom((ue) =>
-              [
-                '/Browsers - Windows',
-                '/Browsers - Linux',
-                '/Browsers - Mac'
-              ].includes(ue.folder)
+              ['/Browsers - Windows', '/Browsers - Mac'].includes(ue.folder)
             )
           }
         },
         (err, __, body) => {
-          console.log(proxy)
-
           if (err) {
             throw err
           }
+          console.log(__)
 
           resolve(body)
         }

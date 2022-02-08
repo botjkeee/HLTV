@@ -64,8 +64,8 @@ export class Hltv {
     return new Hltv(config)
   }
 
-  public addProxy(url: string) {
-    this.config.loadPage = defaultLoadPage(this.config.httpAgent, url)
+  public addProxy(array: any) {
+    this.config.loadPage = defaultLoadPage(this.config.httpAgent, array)
   }
 
   public TEAM_PLACEHOLDER_IMAGE =

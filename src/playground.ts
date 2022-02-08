@@ -4,7 +4,7 @@ const log = (promise: Promise<any>) =>
   promise
     .then((res) => console.dir(res, { depth: null }))
     .catch((err) => console.log(err))
-
+HLTV.addProxy(['http://Selffskozlov:M7s0UxB@46.3.170.22:45785'])
 log(HLTV.getMatch({ id: 2353983 }))
 // log(HLTV.getMatches())
 // log(HLTV.getEvent({ id: 2353966 }))
