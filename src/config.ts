@@ -30,8 +30,6 @@ export const defaultLoadPage =
           if (err) {
             throw err
           }
-          console.log(__)
-
           resolve(body)
         }
       )
