@@ -9,7 +9,8 @@ export interface HLTVConfig {
 }
 
 export const defaultLoadPage =
-  (httpAgent: HttpsAgent | HttpAgent | undefined) => (url: string) =>
+  (httpAgent: HttpsAgent | HttpAgent | undefined, proxy?: any) =>
+  (url: string) =>
     new Promise<string>((resolve) => {
       request.get(
         url,
@@ -27,6 +28,8 @@ export const defaultLoadPage =
           }
         },
         (err, __, body) => {
+          console.log(proxy)
+
           if (err) {
             throw err
           }
