@@ -110,6 +110,7 @@ export interface FullMatch {
   playerOfTheMatch?: Player
   vsAnotherTeam: any
   statsPlayers: any
+  playerRating: any
 }
 
 export const getMatch =
@@ -146,6 +147,7 @@ export const getMatch =
     const playerOfTheMatch = getPlayerOfTheMatch($, players)
     const winnerTeam = getWinnerTeam($, team1, team2)
     const statsPlayers = getStats($, team1, team2)
+    const playerRating = getPlayerRating($)
 
     return {
       id,
@@ -171,9 +173,44 @@ export const getMatch =
       vetoes,
       highlights,
       demos,
-      odds: odds.concat(oddsCommunity ? [oddsCommunity] : [])
+      odds: odds.concat(oddsCommunity ? [oddsCommunity] : []),
+      playerRating
     }
   }
+
+function getPlayerRating($: HLTVPage): any {
+  const res = $('.lineups-compare-container').attr('data-team1-players-data')
+  const res2 = $('.lineups-compare-container').attr('data-team2-players-data')
+  const map = Object.entries(JSON.parse(res)).map(([key, value]: any) => {
+    return {
+      id: value.playerId,
+      name: value.nickname,
+      rating: value.rating,
+      kpr: value.kpr,
+      dpr: value.dpr,
+      kast: value.kast,
+      impact: value.impact,
+      adr: value.adr,
+      bodyshotUrl: value.bodyshotUrl,
+      playerPictureUrl: value.playerPictureUrl
+    }
+  })
+  const map2 = Object.entries(JSON.parse(res2)).map(([key, value]: any) => {
+    return {
+      id: value.playerId,
+      name: value.nickname,
+      rating: value.rating,
+      kpr: value.kpr,
+      dpr: value.dpr,
+      kast: value.kast,
+      impact: value.impact,
+      adr: value.adr,
+      bodyshotUrl: value.bodyshotUrl,
+      playerPictureUrl: value.playerPictureUrl
+    }
+  })
+  return { team1: map, team2: map2 }
+}
 
 function getStats($: HLTVPage, team1?: Team, team2?: Team): any {
   let obj: any = {}

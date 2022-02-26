@@ -69,6 +69,7 @@ export interface FullPlayerStats {
     grenadeKills: number
     otherKills: number
   }
+  ratingVsTop: any
   clutches: any
 }
 
@@ -216,6 +217,20 @@ export const getPlayerStats =
       impact: getImportantStats('impact')
     }
 
+    const getRatingVsTop = (): any => {
+      const row = $('.featured-ratings-container .g-grid .col-custom')
+      let obj: any = {}
+      row.toArray().forEach((e) => {
+        let top = e.find('.rating-description').text()
+        let number = top.split(' ').find((e) => +e)
+        obj[number ?? 0] = {
+          value: e.find('.rating-value').text() ?? null,
+          maps: e.find('.rating-maps').text() ?? null
+        }
+      })
+      return obj
+    }
+
     const getIndivialStats = (label: string): number => {
       const lbl = label.toLowerCase()
       const row = i$('.stats-row').filter((_, x) =>
@@ -298,6 +313,7 @@ export const getPlayerStats =
       team,
       overviewStatistics,
       individualStatistics,
+      ratingVsTop: getRatingVsTop(),
       matches,
       clutches: getClutches()
     }
