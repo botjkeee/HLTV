@@ -39,7 +39,6 @@ export interface FullPlayer {
   }
   teams: FullPlayerTeam[]
   achievements: PlayerAchievement[]
-  news: Article[]
 }
 
 export const getPlayer =
@@ -172,13 +171,6 @@ export const getPlayer =
           }))
       }))
 
-    const news = $('#newsBox a')
-      .toArray()
-      .map((el) => ({
-        name: el.contents().eq(1).text(),
-        link: el.attr('href')
-      }))
-
     return {
       id,
       name,
@@ -192,8 +184,7 @@ export const getPlayer =
       country,
       team,
       statistics,
-      achievements,
       teams,
-      news
+      achievements
     }
   }
